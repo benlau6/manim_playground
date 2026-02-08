@@ -54,17 +54,17 @@ class MonteCarlo(Scene):
         n_dots_per_groups = [
             *[1] * 10,
             *[100] * 10,
-            *[1000] * 20,
+            # *[1000] * 20,
         ]
 
         # creating positions in memory
         n_dots_total = sum(n_dots_per_groups)
         print(f"Creating {n_dots_total} dots")
-        xs = -6 + np.random.random(n_dots_total) * 4
-        ys = -2 + np.random.random(n_dots_total) * 4
+        xs = -2 + np.random.random(n_dots_total) * 4 + offset[0]
+        ys = -2 + np.random.random(n_dots_total) * 4 + offset[1]
         zs = np.zeros(n_dots_total)
         pos = np.vstack([xs, ys, zs])
-        is_in_circle = (xs + 4) ** 2 + ys**2 < 4
+        is_in_circle = (xs - offset[0]) ** 2 + (ys - offset[1]) ** 2 < 4
 
         # create n groups
         # drawing dots
