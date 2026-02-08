@@ -1,7 +1,20 @@
 [tasks.manim]
-description = "run manim"
+description = "run manim in low quality"
 run = "uv run manim -pql --fps=24 demo.py $class"
+
+
+[tasks.manimqh]
+description = "run manim in high quality"
+run = "uv run manim -pqh --fps=24 demo.py $class"
 
 [tasks.manim_opengl]
 description = "run manim"
 run = "uv run manim -pql --fps=24 --renderer=opengl demo.py $class"
+
+
+[tasks.profile]
+description = "run profiler"
+run = """
+uv run -m cProfile -o demo.txt demo.py
+uvx snakeviz demo.txt
+"""
