@@ -1,7 +1,8 @@
 from manim import *
 
 import numpy as np
-import random as ran
+
+np.random.seed(42)
 
 
 class MonteCarlo(Scene):
@@ -42,41 +43,56 @@ class MonteCarlo(Scene):
 
         self.add(point_label, in_label, pi_label)
 
-        n_dots_all = 0
+        n_dots_now = 0
         n_dots_in_circle = 0
         approx_pi = 0
 
-        point_number.add_updater(lambda m: m.set_value(n_dots_all))
+        point_number.add_updater(lambda m: m.set_value(n_dots_now))
         in_number.add_updater(lambda m: m.set_value(n_dots_in_circle))
         pi_number.add_updater(lambda m: m.set_value(approx_pi))
 
-        ran.seed(1)
+        n_dots_per_groups = [
+            *[1] * 10,
+            *[100] * 10,
+            *[1000] * 20,
+        ]
+
+        # creating positions in memory
+        n_dots_total = sum(n_dots_per_groups)
+        print(f"Creating {n_dots_total} dots")
+        xs = -6 + np.random.random(n_dots_total) * 4
+        ys = -2 + np.random.random(n_dots_total) * 4
+        zs = np.zeros(n_dots_total)
+        pos = np.vstack([xs, ys, zs])
+        is_in_circle = (xs + 4) ** 2 + ys**2 < 4
 
         # create n groups
-        n_groups = 50
-        n_dots_per_group = 50
-        n_dots_to_create = n_groups * n_dots_per_group
-        print(f"Creating {n_dots_to_create} dots")
-        for _ in range(n_groups):
+        # drawing dots
+        for n_dots_per_group in n_dots_per_groups:
+            print(f"Drawing {n_dots_per_group} dots")
             dots_group = VGroup()
             # create m dots per group
-            for _ in range(n_dots_per_group + 1):
-                pos = (-6 + ran.random() * 4, -2 + ran.random() * 4, 0)
-                if (pos[0] + 4) ** 2 + pos[1] ** 2 < 4:
-                    dot = Dot(color=RED, radius=0.04)
+            for _ in range(n_dots_per_group):
+                dot_idx = n_dots_now
+                if is_in_circle[dot_idx]:
+                    color = RED
                     n_dots_in_circle += 1
                 else:
-                    dot = Dot(color=GREEN, radius=0.04)
-                dot.move_to(pos)
+                    color = GREEN
+
+                dot = Dot(color=color, radius=0.04)
+                dot.move_to(pos[:, dot_idx])
                 dots_group.add(dot)
+                n_dots_now += 1
 
-                # update counters
-                n_dots_all += 1
-                approx_pi = n_dots_in_circle / n_dots_all * 4
+            # update counters
+            approx_pi = n_dots_in_circle / n_dots_now * 4
 
-            # create group of dots in run_time second
-            sec_to_update = 0.5
-            self.play(Create(dots_group, run_time=sec_to_update))
+            # draw group of dots in run_time second
+            # matching this with fps can speed up rendering by a lot
+            # cuz if additional screens have to be copied
+            sec_per_animation = 0.5
+            self.play(Create(dots_group, run_time=sec_per_animation))
 
         self.wait(2)
 
