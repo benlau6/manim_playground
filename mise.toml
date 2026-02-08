@@ -1,0 +1,7 @@
+[tasks.manim]
+description = "run manim"
+run = "uv run manim -pql --fps=24 demo.py $class"
+
+[tasks.manim_opengl]
+description = "run manim"
+run = "uv run manim -pql --fps=24 --renderer=opengl demo.py $class"
