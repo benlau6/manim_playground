@@ -1,8 +1,7 @@
 from manim import *
 
 import numpy as np
-
-np.random.seed(42)
+import random as ran
 
 
 class MonteCarlo(Scene):
@@ -43,51 +42,39 @@ class MonteCarlo(Scene):
 
         self.add(point_label, in_label, pi_label)
 
-        n_dots_now = 0
+        n_dots_all = 0
         n_dots_in_circle = 0
         approx_pi = 0
 
-        point_number.add_updater(lambda m: m.set_value(n_dots_now))
+        point_number.add_updater(lambda m: m.set_value(n_dots_all))
         in_number.add_updater(lambda m: m.set_value(n_dots_in_circle))
         pi_number.add_updater(lambda m: m.set_value(approx_pi))
+
+        ran.seed(1)
 
         # create n groups
         n_groups = 50
         n_dots_per_group = 50
         n_dots_to_create = n_groups * n_dots_per_group
         print(f"Creating {n_dots_to_create} dots")
-
-        # creating positions in memory
-        xs = -6 + np.random.random(n_dots_to_create) * 4
-        ys = -2 + np.random.random(n_dots_to_create) * 4
-        z = 0
-        is_in_circle = (xs + 4) ** 2 + (ys + 4) ** 2 < 4
-
-        # drawing dots
-        for i in range(n_groups):
-            start_idx = i * n_dots_per_group
-            end_idx = start_idx + n_dots_per_group
+        for _ in range(n_groups):
             dots_group = VGroup()
-
             # create m dots per group
-            for j in range(start_idx, end_idx):
-                pos = (xs[j], ys[j], z)
-                if is_in_circle[j]:
-                    color = RED
+            for _ in range(n_dots_per_group + 1):
+                pos = (-6 + ran.random() * 4, -2 + ran.random() * 4, 0)
+                if (pos[0] + 4) ** 2 + pos[1] ** 2 < 4:
+                    dot = Dot(color=RED, radius=0.04)
+                    n_dots_in_circle += 1
                 else:
-                    color = GREEN
-
-                dot = Dot(color=color, radius=0.04)
+                    dot = Dot(color=GREEN, radius=0.04)
                 dot.move_to(pos)
                 dots_group.add(dot)
 
-            # update counters
+                # update counters
+                n_dots_all += 1
+                approx_pi = n_dots_in_circle / n_dots_all * 4
 
-            n_dots_now = end_idx
-            n_dots_in_circle = np.sum(is_in_circle[:end_idx])
-            approx_pi = n_dots_in_circle / n_dots_now * 4
-
-            # draw group of dots in run_time second
+            # create group of dots in run_time second
             sec_to_update = 0.5
             self.play(Create(dots_group, run_time=sec_to_update))
 
