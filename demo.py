@@ -113,8 +113,9 @@ class PiTimeSeries(Scene):
             pi_estimates.append(pi_est)
 
         # Create axes
+        x_step = n_samples // 5
         axes = Axes(
-            x_range=[0, n_samples + n_samples // 10, n_samples // 10],
+            x_range=[0, n_samples + x_step // 2, x_step],
             y_range=[2, 4.5, 0.5],
             axis_config={"color": WHITE},
             x_length=10,
@@ -128,10 +129,9 @@ class PiTimeSeries(Scene):
 
         # True pi line
         pi_line = axes.get_horizontal_line(axes.c2p(n_samples, PI), color=WHITE)
+        # axes.add_coordinates(None, {np.pi: r"$\pi$"}, None)
         pi_label = (
-            Text(f"π = {PI:.4f}", color=WHITE)
-            .scale(0.3)
-            .next_to(pi_line.get_left(), LEFT)
+            MathTex(r"\pi", color=WHITE).scale(0.9).next_to(pi_line.get_left(), LEFT)
         )
 
         # Create the time series line
